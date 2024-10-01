@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// model account {
+//   id                       Int      @id @default(autoincrement())
+//   userId                   String   @unique
+//   refresh_token            String?  @db.Text
+//   access_token             String?  @db.Text
+//   expires_at               Int?
+//   refresh_token_expires_in Int?
+//   createdAt                DateTime @default(now())
+//   updatedAt                DateTime
+//   user                     User     @relation(fields: [userId], references: [userID], onDelete: Cascade) // เพิ่ม onDelete: Cascade
+
+//   @@index([userId])
+// }
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  jwt_token    String   
+  userId       Int      // เปลี่ยนเป็น Int เพื่อเชื่อมกับฟิลด์ id ในโมเดล User
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade) // เปลี่ยน references เป็น id
+
+  @@index([userId])
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  username  String    @unique
+  password  String
+  fullName  String?
+  lastName  String?
+  image     String?
+  userID    String    @unique // รหัสพนักงานที่ขึ้นต้นด้วย 'A' ตามด้วย 3 ตัวเลข
+  role      String
+  tel       Int
+  tasks     Task[]
+  meetings  Meeting[] // ผู้ใช้สามารถสร้างหลายการนัดหมาย
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  sessions  Session[] // ปรับให้เรียกโมเดล Session อย่างถูกต้อง
+ // account       account?
+  roles     Role      @relation(fields: [role], references: [rolename]) // ผู้ใช้มีบทบาทหนึ่งบทบาท
+  holidays  Holiday[] // ผู้ใช้สามารถมีหลายการลางาน
+}
+
+model Machine {
+  id             Int      @id @default(autoincrement())
+  name           String
+  machine_type   String
+  machine_img    String
+  machine_id     Int      @unique // id บนระบบตัวเอง
+  machine_des    String?
+  machine_model  String?
+  machine_SN     String?
+  machine_Advice String?
+  machine_meet   Boolean
+  meetId         Int? // Foreign key to Meeting
+  meet           Meeting? @relation(fields: [meetId], references: [id])
+  tasks          Task[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  Meeting Meeting[] @relation(name: "meet")
+}
+
+model Meeting {
+  id             Int       @id @default(autoincrement())
+  name           String
+  meeting_date   DateTime
+  meeting_tel    String
+  meeting_des    String
+  meeting_name   String
+  machines       Int       @unique
+  meeting_id     Machine   @relation(name: "meet", fields: [machines], references: [machine_id])
+  meeting_status String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  successAt      DateTime?
+  created_by     String // Foreign key เชื่อมกับ User ที่สร้างการนัดหมาย
+  user           User      @relation(fields: [created_by], references: [userID])
+  Machine        Machine[]
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  taskname    String
+  taskid      String    @unique
+  task_status String
+  machineId   Int // Foreign key to Machine
+  machine     Machine   @relation(fields: [machineId], references: [id])
+  userId      String // Foreign key to User
+  user        User      @relation(fields: [userId], references: [userID])
+  machine_img String // Image of the machine (can store as URL or base64)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  successAt   DateTime?
+}
+
+model Role {
+  id       Int    @id @default(autoincrement())
+  rolename String @unique
+  users    User[]
+}
+
+model Holiday {
+  id             Int      @id @default(autoincrement())
+  holiday_start  DateTime
+  holiday_end    DateTime
+  holiday_type   String // Leave type such as vacation, sick, etc.
+  userId         String // Foreign key to User
+  user           User     @relation(fields: [userId], references: [userID])
+  overlimit      Boolean
+  switch_holiday Boolean
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
