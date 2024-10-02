@@ -4,6 +4,51 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
+export async function GET(req, { params }) {
+  const { id } = params;
+  // ตรวจสอบว่ามี session หรือไม่
+  if (!session || !session.user) {
+    return NextResponse.json(
+      { success: false, message: "Unauthorized" },
+      { status: 401 }
+    );
+  } else {
+    try {
+      const getUsersByID = await prisma.user.findUnique({
+        where: { id: parseInt(id) },
+        select: {
+          userID: true,
+          username: true,
+          fullName: true,
+          lastName: true,
+          roles: {
+            select: {
+              rolename: true,
+            },
+          },
+        },
+      });
+      if (!getUsersByID) {
+        return NextResponse.json({ success: false, message: "User not found" },
+          { status: 404 })
+      }
+      return NextResponse.json(
+        { success: true, data: getUsersByID },
+        { status: 200 }
+      )
+
+    } catch (error) {
+      console.error("Error Update by User:", error);
+      return NextResponse.json(
+        { success: false, message: error.message },
+        { status: 500 }
+      );
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+}
+
 export async function PUT(req, { params }) {
   const session = await auth();
   const { id } = params;

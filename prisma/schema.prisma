@@ -122,11 +122,11 @@ model Role {
 
 model Holiday {
   id             Int      @id @default(autoincrement())
-  holiday_start  DateTime
-  holiday_end    DateTime
-  holiday_type   String // Leave type such as vacation, sick, etc.
+  holiday_start  DateTime?
+  holiday_end    DateTime?
+  holiday_type   String? // Leave type such as vacation, sick, etc.
   userId         String // Foreign key to User
-  user           User     @relation(fields: [userId], references: [userID])
+  user           User     @relation(fields: [userId], references: [username])
   overlimit      Boolean
   switch_holiday Boolean
   createdAt      DateTime @default(now())
