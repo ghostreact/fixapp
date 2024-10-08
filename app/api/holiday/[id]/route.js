@@ -104,7 +104,7 @@ export async function DELETE(req, { params }) {
   const { id } = params;
 
   try {
-      await prisma.role.delete({
+      await prisma.holiday.delete({
           where: { id: parseInt(id) },
       });
       return NextResponse.json({ success: true }, { status: 200 });

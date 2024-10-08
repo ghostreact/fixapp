@@ -7,11 +7,23 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
+      // colors: {
+      //   background: "var(--background)",
+      //   foreground: "var(--foreground)",
+      // },
     },
   },
+  rippleui: {
+		themes: [
+			{
+				themeName: "dark",
+				colorScheme: "dark",
+				colors: {
+					primary: "#573242",
+					backgroundPrimary: "#1a1a1a",
+				},
+			},
+		],
+	},
   plugins: [require("rippleui")],
 };

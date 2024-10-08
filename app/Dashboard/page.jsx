@@ -1,23 +1,50 @@
 "use client";
+import AdminLayouts from "@/layouts/adminLayouts";
+import CashireLayouts from "@/layouts/cashireLayouts";
+import TechLayouts from "@/layouts/techLayouts";
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect } from "react";
+import { redirect } from "next/navigation";
+import React, { Fragment, Suspense } from "react";
 
 const DashboardPage = () => {
-    const router = useRouter();
+  const { data: session, status } = useSession();
 
-    const handleSignOut = useCallback(() => {
-        signOut({ callbackUrl: "/" });
-      }, []);
-  return (
-    <div>
-       <div>DashboardPage</div> 
-       <button className="btn btn-error" onClick={handleSignOut}>
-            Logout
-          </button>
-    </div>
-    
-  )
-}
+  if (status === "unauthenticated") {
+    return redirect("/");
+  }
 
-export default DashboardPage
+  if (status === "authenticated") {
+    switch (session?.user.role) {
+      case "ADMIN":
+        return (
+          <Fragment>
+            <AdminLayouts>
+              {/* เนื้อหาเพิ่มเติมสำหรับ Admin */}
+            </AdminLayouts>
+          </Fragment>
+        );
+      case "TECH":
+        return (
+          <Fragment>
+            <TechLayouts>
+              {/* เนื้อหาเพิ่มเติมสำหรับ Tech */}
+            </TechLayouts>
+          </Fragment>
+        );
+      case "CASHIER":
+        return (
+          <Fragment>
+            <CashireLayouts>
+              {/* เนื้อหาเพิ่มเติมสำหรับ Cashier */}
+            </CashireLayouts>
+          </Fragment>
+        );
+      default:
+        return <div>Unauthorized</div>;
+    }
+  }
+
+  return <Suspense fallback={<div>Loading...</div>} />;
+};
+
+export default DashboardPage;

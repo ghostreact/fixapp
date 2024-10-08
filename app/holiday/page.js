@@ -184,7 +184,7 @@ export default function AddHolidayForm({ userId }) {
           )}
 
           <div className="mb-4">
-          <label class="flex cursor-pointer gap-2">
+          <label className="flex cursor-pointer gap-2">
              <input
               id="switchHoliday"
               {...register("switch_holiday")}

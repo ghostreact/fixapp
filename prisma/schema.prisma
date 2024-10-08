@@ -13,20 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model account {
-//   id                       Int      @id @default(autoincrement())
-//   userId                   String   @unique
-//   refresh_token            String?  @db.Text
-//   access_token             String?  @db.Text
-//   expires_at               Int?
-//   refresh_token_expires_in Int?
-//   createdAt                DateTime @default(now())
-//   updatedAt                DateTime
-//   user                     User     @relation(fields: [userId], references: [userID], onDelete: Cascade) // เพิ่ม onDelete: Cascade
-
-//   @@index([userId])
-// }
-
 model Session {
   id           Int      @id @default(autoincrement())
   sessionToken String   @unique
@@ -65,20 +51,18 @@ model Machine {
   id             Int      @id @default(autoincrement())
   name           String
   machine_type   String
-  machine_img    String
-  machine_id     Int      @unique // id บนระบบตัวเอง
+  machine_img    String?
+  machine_id     String    @unique  // id บนระบบตัวเอง, เป็นค่าที่ไม่ซ้ำกัน
   machine_des    String?
   machine_model  String?
   machine_SN     String?
   machine_Advice String?
   machine_meet   Boolean
   meetId         Int? // Foreign key to Meeting
-  meet           Meeting? @relation(fields: [meetId], references: [id])
+  meet           Meeting[] @relation("MachineToMeeting") // ความสัมพันธ์แบบ one-to-many
   tasks          Task[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-
-  Meeting Meeting[] @relation(name: "meet")
 }
 
 model Meeting {
@@ -88,16 +72,17 @@ model Meeting {
   meeting_tel    String
   meeting_des    String
   meeting_name   String
-  machines       Int       @unique
-  meeting_id     Machine   @relation(name: "meet", fields: [machines], references: [machine_id])
+  machineId      Int?       // เชื่อมโยงกับ Machine ผ่าน machine_id
   meeting_status String
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
   successAt      DateTime?
-  created_by     String // Foreign key เชื่อมกับ User ที่สร้างการนัดหมาย
-  user           User      @relation(fields: [created_by], references: [userID])
-  Machine        Machine[]
+  createdBy      String   // Foreign key เชื่อมโยงกับผู้ใช้ที่สร้างการนัดหมาย
+  user           User     @relation(fields: [createdBy], references: [username])
+  Machine        Machine?   @relation(fields: [machineId], references: [id], name: "MachineToMeeting") // เชื่อมโยงกับ Machine
+  
 }
+
 
 model Task {
   id          Int       @id @default(autoincrement())

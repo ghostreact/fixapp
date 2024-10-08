@@ -8,4 +8,7 @@ export const roles = [
     {
         nameRole : "Cashier"
     },
+    {
+        nameRole : "PROVIDER"
+    },
 ]
