@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function GET(){
+export async function GET() {
     try {
-        const getUsername = await prisma.role.findMany()
+        const getUsername = await prisma.role.findMany();
         return NextResponse.json(getUsername, { status: 200 });
     } catch (error) {
         return NextResponse.json(
@@ -17,18 +17,17 @@ export async function GET(){
     }
 }
 
-export async function POST(req){
-    const {name} =await req.json()
+export async function POST(req) {
+    const { name } = await req.json();
     try {
-        
         const newRole = await prisma.role.create({
-            data : {
-                rolename : name
-            }
-        })
-    
-        console.log(newRole)
-        return NextResponse.json(newRole,{status : 201})
+            data: {
+                rolename: name,
+            },
+        });
+
+        console.log(newRole);
+        return NextResponse.json(newRole, { status: 201 });
     } catch (error) {
         return NextResponse.json(
             { success: false, message: error.message },
@@ -37,5 +36,4 @@ export async function POST(req){
     } finally {
         await prisma.$disconnect();
     }
-    
 }
