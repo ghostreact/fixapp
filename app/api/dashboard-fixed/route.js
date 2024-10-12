@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(){
     const session = await auth();
 
     if (!session || !session.user) {
@@ -12,23 +12,23 @@ export async function GET() {
     }
 
     try {
-        const currentTask = await prisma.task.findFirst({
-            where: {
+        const fixTask = await prisma.task.findFirst({
+            where : {
                 userId: session.user.username,
-                task_status: "pending"
+                task_status: "fixing"
             },
-            include: {
-                machine: true
+            include : {
+                machine : true
             },
-            orderBy: {
-                createdAt: 'desc'
+            orderBy : {
+                createdAt : 'desc'
             }
-        });
+        })
 
-        return NextResponse.json(currentTask);
+        return NextResponse.json(fixTask)
     } catch (error) {
-        console.error("Error fetching current task:", error);
-        return NextResponse.json({ error: "Failed to fetch current task" }, { status: 500 });
+        console.error("Error fetching task:", error);
+        return NextResponse.json({ error: "Failed to fetch task" }, { status: 500 });
     } finally {
         await prisma.$disconnect()
     }

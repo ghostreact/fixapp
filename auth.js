@@ -4,7 +4,6 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import jwt from "jsonwebtoken";
 
-
 const prisma = new PrismaClient();
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -35,6 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: user.email,
             role: user.role,
             name: user.name,
+            userId : user.userID
             // You can also return refresh token or any additional fields
           };
         } else {
@@ -45,12 +45,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   pages: {
     signIn: "/login",
-   
   },
   callbacks: {
-    
     async jwt({ token, user }) {
-      
       if (user) {
         const accessToken = jwt.sign(
           { userId: user.id },
@@ -63,7 +60,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           { expiresIn: "7d" }
         );
         await prisma.$transaction([
-          
           prisma.session.upsert({
             where: {
               sessionToken: accessToken, // ใช้ sessionToken หรือฟิลด์ที่มีความเป็นเอกลักษณ์อื่น
@@ -88,8 +84,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         token.id = user.id;
         token.role = user.role;
-        token.username = user.username,
-       
+        (token.username = user.username), (token.userId = user.userId);
         token.accessToken = accessToken;
       }
       return token;
@@ -98,8 +93,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = token.id;
         session.user.role = token.role;
-        session.user.username = token.username,
-      
+        (session.user.username = token.username),
+          (session.user.userId = token.userId);
         session.accessToken = token.accessToken;
       }
       return session;

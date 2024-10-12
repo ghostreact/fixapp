@@ -51,7 +51,7 @@ export async function POST(req) {
         data: {
           taskname: body.taskname,
           taskid: taskid,
-          task_status: body.task_status,
+          task_status : "fixing",
           user: {
             connect: {
               username: session.user.username

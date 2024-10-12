@@ -53,9 +53,11 @@ const SidebarComponent = ({ children }) => {
   // สร้างรายการเมนูใหม่ โดยใช้ useMemo เพื่อหลีกเลี่ยงการเพิ่มรายการซ้ำ
   const menuItems = useMemo(() => {
     const items = [
+      { name: 'DashBoard', iconPath: 'M12 6v6m0 0v6m0-6h6m-6 0H6', path: '/Dashboard' },
       { name: 'เพิ่มเครื่องใหม่', iconPath: 'M12 6v6m0 0v6m0-6h6m-6 0H6', path: '/machine' },
       { name: 'สร้างการนัดหมาย', iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', path: '/meeting' },
-      { name: 'General', iconPath: 'M4 6h16M4 12h16M4 18h16', path: '/general' },
+      { name: 'สร้างวันหยุด', iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', path: '/holiday' },
+      
     ];
 
     // ถ้า role ของผู้ใช้เป็น 'ADMIN' หรือ 'PROVIDER' ให้เพิ่มเมนูพิเศษ
@@ -85,8 +87,8 @@ const SidebarComponent = ({ children }) => {
         <div className="p-4 flex items-center space-x-2">
           <Image src="/assets/backlogo.png" alt="avatar" width={40} height={40} />
           <div>
-            <h2 className="text-lg font-semibold">Admin Dashboard</h2>
-            <p className="text-xs ">Admin Plan</p>
+            <h2 className="text-lg font-semibold">{session.user.role} Dashboard</h2>
+            <p className="text-xs ">{session.user.role} Plan</p>
           </div>
         </div>
 
@@ -112,10 +114,6 @@ const SidebarComponent = ({ children }) => {
             <div className="dropdown-menu dropdown-menu-right-top ml-2">
               <a className="dropdown-item text-sm">Profile</a>
               <a tabIndex="-1" className="dropdown-item text-sm">Account settings</a>
-              <a tabIndex="-1" className="dropdown-item text-sm">Change email</a>
-              <a tabIndex="-1" className="dropdown-item text-sm">Subscriptions</a>
-              <a tabIndex="-1" className="dropdown-item text-sm">Change password</a>
-              <a tabIndex="-1" className="dropdown-item text-sm">Refer a friend</a>
               <a tabIndex="-1" className="dropdown-item text-sm">Settings</a>
               <button tabIndex="-1" className="btn btn-error text-sm" onClick={handleSignOut}>Logout</button>
             </div>

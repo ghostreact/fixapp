@@ -45,3 +45,23 @@ export async function DELETE(req, { params }) {
         await prisma.$disconnect();
     }
 }
+
+export async function PUT(req, { params }) {
+    const { id } = params;
+    const body = await req.json();
+
+    try {
+        const updatedMachine = await prisma.machine.update({
+            where: { id: parseInt(id) },
+            data: {
+                name: body.name,
+                // เพิ่มฟิลด์อื่น ๆ ที่ต้องการอัปเดตตามต้องการ
+            },
+        });
+        return NextResponse.json(updatedMachine);
+    } catch (error) {
+        console.error("Error updating machine:", error);
+        return NextResponse.json({ error: "Failed to update machine" }, { status: 500 });
+    }
+}
+

@@ -6,7 +6,7 @@ import { signOut, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import React, { Fragment, Suspense, useEffect, useState } from "react";
 
-const DashboardPage = () => {
+const DashboardPage = (prop) => {
   const { data: session, status } = useSession();
   const [currentTask, setCurrentTask] = useState(null);
 
@@ -32,18 +32,7 @@ const DashboardPage = () => {
     return redirect("/");
   }
 
-  const renderCurrentTask = () => {
-    if (currentTask) {
-      return (
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold">Current Task</h3>
-          <p>Machine: {currentTask.taskname}</p>
-          <p>Status: {currentTask.task_status}</p>
-        </div>
-      );
-    }
-    return null;
-  };
+ 
 
   if (status === "authenticated") {
     const Layout = {
@@ -54,8 +43,9 @@ const DashboardPage = () => {
 
     return (
       <Layout>
-        {renderCurrentTask()}
+        
         {/* เนื้อหาอื่นๆ ของ Dashboard */}
+        {prop.children}
       </Layout>
     );
   }
