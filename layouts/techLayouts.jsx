@@ -75,12 +75,14 @@ const TechLayouts = ({ children }) => {
             title="จำนวนเครื่องซ่อมเสร็จ"
             value={stats.taskSuccess || 0}
             icon="📋"
+            path="/description"
           />
           {/* <StatCard title="User Registrations" value={stats.userTotal || 0} color="yellow" icon="👥" /> */}
         </div>
-        <div class="divider"></div>
-        <div className=" p-6 rounded-lg shadow-md" style={{
-          backgroundColor: "blue",
+        <div className="divider"></div>
+        <div className=" p-6 rounded-lg shadow-md" 
+        style={{
+          //backgroundColor: "blue",
           
         }}>
           <h2 className="text-2xl font-semibold mb-4">Task List</h2>

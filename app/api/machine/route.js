@@ -41,8 +41,7 @@ export async function POST(req) {
       data: {
         name: data.name,
         machine_type: data.machine_type,
-        machine_img_before: data.machine_img_before || null, // ใส่ค่า null ถ้าไม่มีค่า
-        machine_img_after: data.machine_img_after || null, // ใส่ค่า null ถ้าไม่มีค่า
+        machine_tel : data.machine_tel,
         machine_id: newMachineId,
         machine_des: data.machine_des,
         machine_model: data.machine_model,

@@ -27,44 +27,45 @@ model Session {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String
-  username  String    @unique
-  password  String
-  fullName  String?
-  lastName  String?
-  image     String?
-  userID    String    @unique // รหัสพนักงานที่ขึ้นต้นด้วย 'A' ตามด้วย 3 ตัวเลข
-  role      String
-  tel       Int
-  tasks     Task[]
-  meetings  Meeting[] // ผู้ใช้สามารถสร้างหลายการนัดหมาย
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  sessions  Session[] // ปรับให้เรียกโมเดล Session อย่างถูกต้อง
-  // account       account?
-  roles     Role      @relation(fields: [role], references: [rolename]) // ผู้ใช้มีบทบาทหนึ่งบทบาท
-  holidays  Holiday[] // ผู้ใช้สามารถมีหลายการลางาน
+  id         Int          @id @default(autoincrement())
+  name       String
+  username   String       @unique
+  password   String
+  fullName   String?
+  lastName   String?
+  image      String?
+  userID     String       @unique // รหัสพนักงานที่ขึ้นต้นด้วย 'A' ตามด้วย 3 ตัวเลข
+  role       String
+  tel        Int
+  tasks      Task[]
+  meetings   Meeting[] // ผู้ใช้สามารถสร้างหลายการนัดหมาย
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  sessions   Session[] // ปรับให้เรียกโมเดล Session อย่างถูกต้อง
+  roles      Role         @relation(fields: [role], references: [rolename]) // ผู้ใช้มีบทบาทหนึ่งบทบาท
+  holidays   Holiday[] // ผู้ใช้สามารถมีหลายการลางาน
+  closeTasks Close_Task[]
 }
 
 model Machine {
-  id                 Int        @id @default(autoincrement())
-  name               String
-  machine_type       String
-  machine_img_before String?
-  machine_img_after  String?
-  machine_id         String     @unique // id บนระบบตัวเอง, เป็นค่าที่ไม่ซ้ำกัน
-  machine_des        String?
-  machine_model      String?
-  machine_SN         String?
-  machine_Advice     String?
-  machine_meet       Boolean
-  machine_status     TaskStatus @default(pending)
-  meetId             Int? // Foreign key to Meeting
-  meet               Meeting[]  @relation("MachineToMeeting") // ความสัมพันธ์แบบ one-to-many
-  tasks              Task[]
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  id             Int        @id @default(autoincrement())
+  name           String
+  machine_type   String
+  machine_id     String     @unique // id บนระบบตัวเอง, เป็นค่าที่ไม่ซ้ำกัน
+  machine_des    String?
+  machine_tel    String?
+  machine_model  String?
+  machine_SN     String?    @unique
+  machine_Advice String?    @unique
+  machine_meet   Boolean
+  machine_status TaskStatus @default(pending)
+  meetId         Int? // Foreign key to Meeting
+  meet           Meeting[]  @relation("MachineToMeeting") // ความสัมพันธ์แบบ one-to-many
+  tasks          Task[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  closeTasks Close_Task[]
 }
 
 model Meeting {
@@ -85,18 +86,32 @@ model Meeting {
 }
 
 model Task {
-  id          Int       @id @default(autoincrement())
-  taskname    String
-  taskid      String    @unique
-  task_status String    @default("pending")
-  machineId   Int // Foreign key to Machine
-  machine     Machine   @relation(fields: [machineId], references: [id])
-  userId      String // Foreign key to User
-  user        User      @relation(fields: [userId], references: [userID])
-  machine_img String? // Image of the machine (can store as URL or base64)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  successAt   DateTime?
+  id                 Int         @id @default(autoincrement())
+  taskname           String
+  taskid             String      @unique
+  task_status        String      @default("pending")
+  machineId          Int // Foreign key to Machine
+  machine            Machine     @relation(fields: [machineId], references: [id])
+  machine_img_before String?
+  userId             String // Foreign key to User
+  user               User        @relation(fields: [userId], references: [userID])
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  closeTask          Close_Task?
+  successAt          DateTime?
+}
+
+model Close_Task {
+  id                Int       @id @default(autoincrement())
+  taskId            Int       @unique // Foreign key to Task
+  task              Task      @relation(fields: [taskId], references: [id])
+  machine_img_after String?
+  createdAt         DateTime  @default(now())
+  successAt         DateTime?
+  userId            String // Foreign key to User
+  user              User      @relation(fields: [userId], references: [userID])
+  machineId         Int // Foreign key to Machine
+  machine           Machine   @relation(fields: [machineId], references: [id])
 }
 
 model Role {
