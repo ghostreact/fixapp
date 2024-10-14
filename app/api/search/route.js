@@ -1,5 +1,5 @@
-import moment from 'moment';
 import { PrismaClient } from "@prisma/client";
+import moment from "moment";
 import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
@@ -23,25 +23,23 @@ export async function GET(req) {
 
     // ค้นหาด้วยช่วงวันที่ สำหรับทั้ง createdAt และ successAt
     if (startDate && endDate) {
-      const startDateUTC = moment(startDate).utc().startOf('day').toISOString();
-      const endDateUTC = moment(endDate).utc().endOf('day').toISOString();
+      const startDateUTC = moment(startDate).utc().startOf('day').toISOString(); // ตั้งเป็น 00:00:00 ของวันเริ่มต้น
+      const endDateUTC = moment(endDate).utc().endOf('day').toISOString(); // ตั้งเป็น 23:59:59 ของวันสิ้นสุด
 
-      whereClause = {
-        OR: [
-          {
-            createdAt: {
-              gte: new Date(startDateUTC),
-              lte: new Date(endDateUTC),
-            },
+      whereClause.OR = [
+        {
+          createdAt: {
+            gte: new Date(startDateUTC),
+            lte: new Date(endDateUTC),
           },
-          {
-            successAt: {
-              gte: new Date(startDateUTC),
-              lte: new Date(endDateUTC),
-            },
+        },
+        {
+          successAt: {
+            gte: new Date(startDateUTC),
+            lte: new Date(endDateUTC),
           },
-        ],
-      };
+        },
+      ];
     }
 
     // ดึงข้อมูลจาก Close_Task

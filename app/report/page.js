@@ -1,13 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import Modal from "react-modal";
 
 export default function ReportForm() {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const [reportData, setReportData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedImages, setSelectedImages] = useState([]);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     // ฟังก์ชันสำหรับค้นหารายงานการซ่อม
     const onSubmit = async (data) => {
@@ -76,6 +81,20 @@ export default function ReportForm() {
             machine_SN: "",
             machine_Advice: "",
         });
+    };
+
+    const handleImageClick = (images) => {
+        setSelectedImages(images);
+        setCurrentImageIndex(0);
+        setIsModalOpen(true);
+    };
+
+    const handleNextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % selectedImages.length);
+    };
+
+    const handlePreviousImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + selectedImages.length) % selectedImages.length);
     };
 
     return (
@@ -180,10 +199,13 @@ export default function ReportForm() {
                                             </td>
                                             <td className="border px-4 py-2">
                                                 {report.machine_img_before ? (
-                                                    <img
+                                                    <Image
                                                         src={report.machine_img_before}
                                                         alt="Before Repair"
-                                                        className="w-20 h-20 object-cover"
+                                                        width={100}
+                                                        height={100}
+                                                        className="cursor-pointer"
+                                                        onClick={() => handleImageClick([report.machine_img_before, report.machine_img_after])}
                                                     />
                                                 ) : (
                                                     "ไม่มีข้อมูล"
@@ -191,10 +213,13 @@ export default function ReportForm() {
                                             </td>
                                             <td className="border px-4 py-2">
                                                 {report.machine_img_after ? (
-                                                    <img
+                                                    <Image
                                                         src={report.machine_img_after}
                                                         alt="After Repair"
-                                                        className="w-20 h-20 object-cover"
+                                                        width={100}
+                                                        height={100}
+                                                        className="cursor-pointer"
+                                                        onClick={() => handleImageClick([report.machine_img_before, report.machine_img_after])}
                                                     />
                                                 ) : (
                                                     "ไม่มีข้อมูล"
@@ -211,6 +236,31 @@ export default function ReportForm() {
                         </div>
                     )}
                 </>
+            )}
+
+            {/* Modal สำหรับแสดงภาพขนาดใหญ่ */}
+            {selectedImages.length > 0 && (
+                <Modal
+                    isOpen={isModalOpen}
+                    onRequestClose={() => setIsModalOpen(false)}
+                    contentLabel="Image Modal"
+                    className="max-w-4xl mx-auto mt-10 p-6 rounded-lg shadow-lg bg-white"
+                >
+                    <button onClick={() => setIsModalOpen(false)} className="btn btn-secondary">
+                        ปิด
+                    </button>
+                    <div className="flex items-center justify-center mt-4">
+                        <button onClick={handlePreviousImage} className="btn btn-primary mr-4">ก่อนหน้า</button>
+                        <Image
+                            src={selectedImages[currentImageIndex]}
+                            alt="Selected Repair"
+                            className="w-full h-auto"
+                            width={250}
+                            height={250}
+                        />
+                        <button onClick={handleNextImage} className="btn btn-primary ml-4">ถัดไป</button>
+                    </div>
+                </Modal>
             )}
         </div>
     );

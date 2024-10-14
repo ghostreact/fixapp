@@ -38,7 +38,7 @@ export default function ContentAccord() {
                 });
             }
 
-            const res = await fetch(`/api/close-job/${taskId}`, {
+            const res = await fetch(`/api/close/${taskId}`, {
                 method: "POST",
                 body: formData,
             });
