@@ -37,15 +37,14 @@ export default function ContentAccord() {
                     formData.append("afterImage", file);
                 });
             }
-
+    
             const res = await fetch(`/api/close/${taskId}`, {
                 method: "POST",
                 body: formData,
             });
-
+    
             if (res.ok) {
-                // อัปเดตรายการ tasks หลังจากปิดงาน
-                window.location.reload();
+                // อัปเดตรายการ tasks หลังจากปิดงานโดยไม่ต้องรีโหลดหน้า
                 setTaskSets((prevTaskSets) =>
                     prevTaskSets.filter((task) => task.id !== taskId)
                 );
@@ -57,6 +56,7 @@ export default function ContentAccord() {
             console.error("Error closing the job:", error);
         }
     };
+    
 
     return (
         <div className="accordion-group accordion-group-bordered">

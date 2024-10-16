@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import ContentAccord from "@/components/ContentAccord";
 
+
 const TechLayouts = ({ children }) => {
   const { data: session } = useSession();
   const [stats, setStats] = useState({});
@@ -25,8 +26,8 @@ const TechLayouts = ({ children }) => {
 
   const StatCard = ({ title, value, color, icon, path }) => (
     <div className={`bg-${color}-500 p-4 rounded-lg shadow-md m-2 `} style={{
-      backgroundColor : "red",
-      height : "5rem",
+      
+      height : "6rem",
       display : "grid",
 
       }}>
@@ -75,7 +76,7 @@ const TechLayouts = ({ children }) => {
             title="จำนวนเครื่องซ่อมเสร็จ"
             value={stats.taskSuccess || 0}
             icon="📋"
-            path="/description"
+            
           />
           {/* <StatCard title="User Registrations" value={stats.userTotal || 0} color="yellow" icon="👥" /> */}
         </div>
@@ -87,7 +88,7 @@ const TechLayouts = ({ children }) => {
         }}>
           <h2 className="text-2xl font-semibold mb-4">Task List</h2>
         
-            
+          {/* <EmployeeCalendar /> */}
             <ContentAccord />
           
         </div>

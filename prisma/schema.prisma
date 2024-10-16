@@ -92,7 +92,7 @@ model Task {
   task_status        String      @default("pending")
   machineId          Int // Foreign key to Machine
   machine            Machine     @relation(fields: [machineId], references: [id])
-  machine_img_before String?
+  machine_img_before Json?
   userId             String // Foreign key to User
   user               User        @relation(fields: [userId], references: [userID])
   createdAt          DateTime    @default(now())
@@ -105,7 +105,7 @@ model Close_Task {
   id                Int       @id @default(autoincrement())
   taskId            Int       @unique // Foreign key to Task
   task              Task      @relation(fields: [taskId], references: [id])
-  machine_img_after String?
+  machine_img_after Json?
   createdAt         DateTime  @default(now())
   successAt         DateTime?
   userId            String // Foreign key to User

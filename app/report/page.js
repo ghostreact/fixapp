@@ -6,7 +6,12 @@ import { useForm } from "react-hook-form";
 import Modal from "react-modal";
 
 export default function ReportForm() {
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm();
     const [reportData, setReportData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -19,12 +24,13 @@ export default function ReportForm() {
         setLoading(true);
         setError("");
 
-        // ตรวจสอบว่าไม่สามารถค้นหาด้วยทั้งสองเงื่อนไขพร้อมกันได้
         const isMachineSearch = data.machine_SN || data.machine_Advice;
         const isDateSearch = data.startDate && data.endDate;
 
         if (isMachineSearch && isDateSearch) {
-            setError("กรุณาเลือกการค้นหาอย่างใดอย่างหนึ่งเท่านั้น (หมายเลขเครื่องหรือช่วงวันที่)");
+            setError(
+                "กรุณาเลือกการค้นหาอย่างใดอย่างหนึ่งเท่านั้น (หมายเลขเครื่องหรือช่วงวันที่)"
+            );
             setLoading(false);
             return;
         }
@@ -52,7 +58,18 @@ export default function ReportForm() {
                 throw new Error("Failed to fetch report data");
             }
             const result = await response.json();
-            setReportData(result.data);
+
+            // รวมข้อมูล machine_img_after จาก close_task
+            const updatedReportData = result.data.map((report) => {
+                return {
+                    ...report,
+                    machine_img_after: report.closeTask
+                        ? report.closeTask.machine_img_after
+                        : null,
+                };
+            });
+
+            setReportData(updatedReportData);
         } catch (error) {
             console.error("Error fetching report data:", error);
         } finally {
@@ -83,18 +100,27 @@ export default function ReportForm() {
         });
     };
 
-    const handleImageClick = (images) => {
-        setSelectedImages(images);
+    const handleImageClick = (beforeImages, afterImages) => {
+        const allImages = [...(beforeImages || []), ...(afterImages || [])];
+        const validImages = allImages.filter(
+            (img) => img && (img.startsWith("/") || img.startsWith("http"))
+        );
+        setSelectedImages(validImages);
         setCurrentImageIndex(0);
         setIsModalOpen(true);
     };
 
     const handleNextImage = () => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % selectedImages.length);
+        setCurrentImageIndex(
+            (prevIndex) => (prevIndex + 1) % selectedImages.length
+        );
     };
 
     const handlePreviousImage = () => {
-        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + selectedImages.length) % selectedImages.length);
+        setCurrentImageIndex(
+            (prevIndex) =>
+                (prevIndex - 1 + selectedImages.length) % selectedImages.length
+        );
     };
 
     return (
@@ -131,10 +157,14 @@ export default function ReportForm() {
                 </div>
 
                 <div>
-                    <label className="block font-semibold mb-2">ช่วงวันที่ (สร้างหรือปิดงาน):</label>
+                    <label className="block font-semibold mb-2">
+                        ช่วงวันที่ (สร้างหรือปิดงาน):
+                    </label>
                     <div className="flex space-x-4">
                         <div>
-                            <label htmlFor="startDate" className="block text-sm">วันที่เริ่มต้น:</label>
+                            <label htmlFor="startDate" className="block text-sm">
+                                วันที่เริ่มต้น:
+                            </label>
                             <input
                                 type="date"
                                 id="startDate"
@@ -144,7 +174,9 @@ export default function ReportForm() {
                             />
                         </div>
                         <div>
-                            <label htmlFor="endDate" className="block text-sm">วันที่สิ้นสุด:</label>
+                            <label htmlFor="endDate" className="block text-sm">
+                                วันที่สิ้นสุด:
+                            </label>
                             <input
                                 type="date"
                                 id="endDate"
@@ -157,7 +189,11 @@ export default function ReportForm() {
                 </div>
 
                 <div className="flex space-x-4">
-                    <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+                    <button
+                        type="submit"
+                        className="btn btn-primary w-full"
+                        disabled={loading}
+                    >
                         {loading ? "กำลังค้นหา..." : "ค้นหา"}
                     </button>
                     <button
@@ -178,7 +214,6 @@ export default function ReportForm() {
                     {reportData.length > 0 ? (
                         <div className="mt-8">
                             <h3 className="text-xl font-semibold mb-4">ผลการค้นหา:</h3>
-                            {/* ตารางแสดงผลลัพธ์ */}
                             <table className="min-w-full bg-white border">
                                 <thead>
                                     <tr className="bg-gray-200">
@@ -192,35 +227,49 @@ export default function ReportForm() {
                                 <tbody>
                                     {reportData.map((report) => (
                                         <tr key={report.id}>
-                                            <td className="border px-4 py-2">{report.machine.machine_id}</td>
-                                            <td className="border px-4 py-2">{report.user?.fullName || "N/A"}</td>
                                             <td className="border px-4 py-2">
-                                                {report.successAt ? new Date(report.successAt).toLocaleString() : "-"}
+                                                {report.machine.machine_id}
                                             </td>
                                             <td className="border px-4 py-2">
-                                                {report.machine_img_before ? (
-                                                    <Image
-                                                        src={report.machine_img_before}
-                                                        alt="Before Repair"
-                                                        width={100}
-                                                        height={100}
-                                                        className="cursor-pointer"
-                                                        onClick={() => handleImageClick([report.machine_img_before, report.machine_img_after])}
-                                                    />
+                                                {report.user?.fullName || "N/A"}
+                                            </td>
+                                            <td className="border px-4 py-2">
+                                                {report.successAt
+                                                    ? new Date(report.successAt).toLocaleString()
+                                                    : "-"}
+                                            </td>
+                                            <td className="border px-4 py-2 flex space-x-2">
+                                                {report.machine_img_before &&
+                                                    report.machine_img_before.length > 0 ? (
+                                                    <button
+                                                        className="btn btn-primary"
+                                                        onClick={() =>
+                                                            handleImageClick(
+                                                                report.machine_img_before,
+                                                                "before"
+                                                            )
+                                                        }
+                                                    >
+                                                        ดูรูปก่อนซ่อม
+                                                    </button>
                                                 ) : (
                                                     "ไม่มีข้อมูล"
                                                 )}
                                             </td>
                                             <td className="border px-4 py-2">
-                                                {report.machine_img_after ? (
-                                                    <Image
-                                                        src={report.machine_img_after}
-                                                        alt="After Repair"
-                                                        width={100}
-                                                        height={100}
-                                                        className="cursor-pointer"
-                                                        onClick={() => handleImageClick([report.machine_img_before, report.machine_img_after])}
-                                                    />
+                                                {report.closeTask?.machine_img_after &&
+                                                    report.closeTask.machine_img_after.length > 0 ? (
+                                                    <button
+                                                        className="btn btn-primary"
+                                                        onClick={() =>
+                                                            handleImageClick(
+                                                                report.closeTask.machine_img_after,
+                                                                "after"
+                                                            )
+                                                        }
+                                                    >
+                                                        ดูรูปหลังซ่อม
+                                                    </button>
                                                 ) : (
                                                     "ไม่มีข้อมูล"
                                                 )}
@@ -239,29 +288,57 @@ export default function ReportForm() {
             )}
 
             {/* Modal สำหรับแสดงภาพขนาดใหญ่ */}
-            {selectedImages.length > 0 && (
-                <Modal
-                    isOpen={isModalOpen}
-                    onRequestClose={() => setIsModalOpen(false)}
-                    contentLabel="Image Modal"
-                    className="max-w-4xl mx-auto mt-10 p-6 rounded-lg shadow-lg bg-white"
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={() => setIsModalOpen(false)}
+                contentLabel="Image Modal"
+                className="max-w-4xl mx-auto mt-10 p-6 rounded-lg shadow-lg bg-white"
+            >
+                <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="btn btn-secondary"
                 >
-                    <button onClick={() => setIsModalOpen(false)} className="btn btn-secondary">
-                        ปิด
+                    ปิด
+                </button>
+                <div className="flex items-center justify-center mt-4">
+                    <button
+                        onClick={() =>
+                            setCurrentImageIndex(
+                                (prevIndex) =>
+                                    (prevIndex - 1 + selectedImages.length) %
+                                    selectedImages.length
+                            )
+                        }
+                        className="btn btn-primary mr-4"
+                    >
+                        ก่อนหน้า
                     </button>
-                    <div className="flex items-center justify-center mt-4">
-                        <button onClick={handlePreviousImage} className="btn btn-primary mr-4">ก่อนหน้า</button>
+                    {selectedImages[currentImageIndex] ? (
                         <Image
                             src={selectedImages[currentImageIndex]}
-                            alt="Selected Repair"
+                            alt={`Repair Image ${currentImageIndex + 1}`}
                             className="w-full h-auto"
-                            width={250}
-                            height={250}
+                            width={600}
+                            height={600}
                         />
-                        <button onClick={handleNextImage} className="btn btn-primary ml-4">ถัดไป</button>
-                    </div>
-                </Modal>
-            )}
+                    ) : (
+                        <p>ไม่มีรูปภาพให้แสดง</p>
+                    )}
+                    <button
+                        onClick={() =>
+                            setCurrentImageIndex(
+                                (prevIndex) => (prevIndex + 1) % selectedImages.length
+                            )
+                        }
+                        className="btn btn-primary ml-4"
+                    >
+                        ถัดไป
+                    </button>
+                </div>
+                <p className="text-center mt-2">
+                    รูปที่ {currentImageIndex + 1} จาก {selectedImages.length}
+                </p>
+            </Modal>
         </div>
     );
 }

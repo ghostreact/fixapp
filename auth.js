@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
-    // maxAge: 5 * 60, // 5 minutes in seconds
+     maxAge: 15 * 60, // 5 minutes in seconds
   },
   providers: [
     Credentials({

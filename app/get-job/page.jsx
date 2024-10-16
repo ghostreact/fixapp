@@ -247,21 +247,27 @@ const GetJob = () => {
             formData.append("taskname", machine.name);
             formData.append("machineId", machine.id);
             formData.append("task_status", "fixing");
-
+    
             // เพิ่มรูปหลายรูปใน FormData
             for (const file of data.beforeImage) {
                 formData.append("beforeImage", file);
             }
-
+    
             const response = await fetch("/api/task", {
                 method: "POST",
                 body: formData,
             });
-
+    
             if (!response.ok) {
-                throw new Error("Failed to create task");
+                const errorText = await response.text();
+                throw new Error(`Failed to create task: ${errorText}`);
             }
-
+    
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error(`Unexpected response type: ${contentType}`);
+            }
+    
             const result = await response.json();
             if (result.success) {
                 document.getElementById(`modal-task-${machine.id}`).checked = false;
@@ -273,7 +279,7 @@ const GetJob = () => {
             }
         } catch (error) {
             console.error("Error creating task:", error);
-            setError("Failed to create task. Please try again.");
+            setError(`Failed to create task: ${error.message}`);
         }
     };
 

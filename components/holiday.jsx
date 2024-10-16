@@ -5,7 +5,6 @@ import { useMemo, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import moment from "moment";
 
-
 export default function AddHolidayForm({ userId }) {
   const {
     register,
@@ -123,133 +122,130 @@ export default function AddHolidayForm({ userId }) {
               </h2>
             </div>
           </div>
-          <section>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-
-            >
-              {!switchHoliday && (
-                <>
-                  <div className="mb-4">
-                    <label
-                      htmlFor="holidayStart"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      วันเริ่มต้น
-                    </label>
-                    <input
-                      type="date"
-                      id="holidayStart"
-                      {...register("holiday_start", { required: true })}
-                      className="input mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      error={errors.holiday_start ? "กรุณาเลือกวันเริ่มต้น" : ""}
-                    />
-                  </div>
-
-                  <div className="mb-4">
-                    <label
-                      htmlFor="holidayEnd"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      วันสิ้นสุด
-                    </label>
-                    <input
-                      type="date"
-                      id="holidayEnd"
-                      {...register("holiday_end", { required: true })}
-                      className="input mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      error={errors.holiday_end ? "กรุณาเลือกวันสิ้นสุด" : ""}
-                    />
-                  </div>
-
-                  <div className="mb-4">
-                    <label
-                      htmlFor="holidayType"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      ประเภทวันหยุด
-                    </label>
-                    <select
-                      id="holidayType"
-                      {...register("holiday_type", { required: true })}
-                      className="select mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      error={errors.holiday_type ? "กรุณาเลือกประเภทวันหยุด" : ""}
-                    >
-                      <option value="">เลือกประเภท</option>
-                      <option value="Annual">วันหยุดประจำปี</option>
-                      <option value="Sick">วันลาป่วย</option>
-                      <option value="Personal">วันลาส่วนตัว</option>
-                    </select>
-                  </div>
-                </>
-              )}
-
+        <section>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          
+        >
+          {!switchHoliday && (
+            <>
               <div className="mb-4">
-                <label className="flex cursor-pointer gap-2">
-                  <input
-                    id="switchHoliday"
-                    {...register("switch_holiday")}
-                    className="text-sm checkbox"
-                    type="checkbox"
-                  />
-                  <span>ขอสลับวันหยุด </span>
+                <label
+                  htmlFor="holidayStart"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  วันเริ่มต้น
                 </label>
-
+                <input
+                  type="date"
+                  id="holidayStart"
+                  {...register("holiday_start", { required: true })}
+                  className="input mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  error={errors.holiday_start ? "กรุณาเลือกวันเริ่มต้น" : ""}
+                />
               </div>
 
-              {switchHoliday && availableHolidays.length > 0 && (
-                <div className="mb-4">
-                  <label
-                    htmlFor="availableHolidays"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    เลือกวันหยุดที่ต้องการสลับ
-                  </label>
-                  <select
-                    id="availableHolidays"
-                    {...register("target_holiday_id")}
-                    className="select mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  >
-                    <option value="">เลือกวันหยุด</option>
-                    {availableHolidays.map((holiday) => (
-                      <option
-                        key={holiday.id}
-                        value={holiday.id}
-                        hidden={holiday.userId === session?.user?.username}
-                      >
-                        {holiday.userId} (
-                        {moment(holiday.holiday_start).format("MMMM D, YYYY")} -{" "}
-                        {moment(holiday.holiday_end).format("MMMM D, YYYY")})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              <div className="mb-4">
+                <label
+                  htmlFor="holidayEnd"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  วันสิ้นสุด
+                </label>
+                <input
+                  type="date"
+                  id="holidayEnd"
+                  {...register("holiday_end", { required: true })}
+                  className="input mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  error={errors.holiday_end ? "กรุณาเลือกวันสิ้นสุด" : ""}
+                />
+              </div>
 
-              {!switchHoliday && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    จำนวนวันหยุด:
-                  </label>
-                  <span>{totalDays}</span> วัน
-                </div>
-              )}
+              <div className="mb-4">
+                <label
+                  htmlFor="holidayType"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  ประเภทวันหยุด
+                </label>
+                <select
+                  id="holidayType"
+                  {...register("holiday_type", { required: true })}
+                  className="select mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  error={errors.holiday_type ? "กรุณาเลือกประเภทวันหยุด" : ""}
+                >
+                  <option value="">เลือกประเภท</option>
+                  <option value="Annual">วันหยุดประจำปี</option>
+                  <option value="Sick">วันลาป่วย</option>
+                  <option value="Personal">วันลาส่วนตัว</option>
+                </select>
+              </div>
+            </>
+          )}
 
-              <button
-                type="submit"
-                className="btn btn-primary w-full  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+          <div className="mb-4">
+          <label className="flex cursor-pointer gap-2">
+             <input
+              id="switchHoliday"
+              {...register("switch_holiday")}
+              className="text-sm checkbox"
+              type="checkbox"
+            />
+             <span>ขอสลับวันหยุด </span>
+          </label>
+           
+          </div>
+
+          {switchHoliday && availableHolidays.length > 0 && (
+            <div className="mb-4">
+              <label
+                htmlFor="availableHolidays"
+                className="block text-sm font-medium text-gray-700"
               >
-                บันทึกวันหยุด
-              </button>
+                เลือกวันหยุดที่ต้องการสลับ
+              </label>
+              <select
+                id="availableHolidays"
+                {...register("target_holiday_id")}
+                className="select mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              >
+                <option value="">เลือกวันหยุด</option>
+                {availableHolidays.map((holiday) => (
+                  <option
+                    key={holiday.id}
+                    value={holiday.id}
+                    hidden={holiday.userId === session?.user?.username}
+                  >
+                    {holiday.userId} (
+                    {moment(holiday.holiday_start).format("MMMM D, YYYY")} -{" "}
+                    {moment(holiday.holiday_end).format("MMMM D, YYYY")})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
-            </form>
-          </section>
+          {!switchHoliday && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                จำนวนวันหยุด:
+              </label>
+              <span>{totalDays}</span> วัน
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="btn btn-primary w-full  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+          >
+            บันทึกวันหยุด
+          </button>
+          
+        </form>
+        </section>
         </div>
-
+        
       </div>
-     
     </div>
-
   );
 }
-

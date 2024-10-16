@@ -35,10 +35,10 @@ export async function GET() {
       where: {
         task_status: "success",
         userId: userId,
-        // successAt: {
-        //   gte: firstDayOfMonth,
-        //   lte: lastDayOfMonth,
-        // },
+        successAt: {
+          gte: firstDayOfMonth,
+          lte: lastDayOfMonth,
+        },
       },
     });
     const taskFixing = await prisma.task.count({
