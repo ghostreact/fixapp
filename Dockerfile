@@ -5,17 +5,21 @@ FROM oven/bun:latest
 WORKDIR /app
 
 # คัดลอกไฟล์ทั้งหมดจากเครื่องไปยัง container
-COPY . .
+
 
 # คัดลอกไฟล์ environment ไปยัง container
 COPY .env .env
+COPY package*.json ./
 
 # ติดตั้ง dependencies ด้วย Bun
 RUN bun install
 
+RUN bunx prisma generate
 # สร้าง production build ของแอปพลิเคชัน
 RUN bun run build
 
+
+COPY . .
 # เปิด port 3000
 EXPOSE 3000
 

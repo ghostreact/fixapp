@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
-
+import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
 const generateUserID = async () => {
@@ -44,12 +44,12 @@ export async function POST(req) {
                 { status: 409 } // HTTP 409 Conflict status code
             );
         }
-
+        const hash_password = await hash(password, 12);
         const newUser = await prisma.user.create({
             data: {
                 name: name,
                 username: username,
-                password: password,
+                password: hash_password,
                 fullName: fullName ?? null,
                 lastName: lastName ?? null,
                 userID: userID,

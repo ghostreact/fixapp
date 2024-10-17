@@ -288,7 +288,7 @@ const GetJob = () => {
     }
 
     return (
-        <div className="max-w-lg mx-auto mt-10 bg-white p-6 rounded-lg shadow">
+        <div className="max-w-lg mx-auto mt-10  p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-4">Select a Machine to Get a Job</h2>
             {error && (
                 <div className="alert alert-error mb-4">
@@ -302,7 +302,7 @@ const GetJob = () => {
                     {machines.map((machine) => (
                         <li
                             key={machine.id}
-                            className="flex justify-between items-center p-4 border rounded hover:bg-gray-100"
+                            className="flex justify-between items-center p-4 border rounded "
                         >
                             <span className=" w-3/4">
                                 {machine.name || "Unknown Machine"}
